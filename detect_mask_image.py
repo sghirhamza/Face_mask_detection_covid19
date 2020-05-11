@@ -9,6 +9,8 @@ import numpy as np
 import argparse
 import cv2
 import os
+import timeit
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -35,6 +37,8 @@ net = cv2.dnn.readNet(prototxtPath, weightsPath)
 print("[INFO] loading face mask detector model...")
 model = load_model(args["model"])
 
+start = timeit.timeit()
+
 # load the input image from disk, clone it, and grab the image spatial
 # dimensions
 image = cv2.imread(args["image"])
@@ -42,8 +46,8 @@ orig = image.copy()
 (h, w) = image.shape[:2]
 
 # construct a blob from the image
-blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300),
-	(104.0, 177.0, 123.0))
+blob = cv2.dnn.blobFromImage(image, 1.0, (1000,1000),
+    	(103.9, 116.77, 123.68))
 
 # pass the blob through the network and obtain the face detections
 print("[INFO] computing face detections...")
@@ -95,6 +99,9 @@ for i in range(0, detections.shape[2]):
 		cv2.putText(image, label, (startX, startY - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 		cv2.rectangle(image, (startX, startY), (endX, endY), color, 2)
+end = timeit.timeit()
+
+print(end - start)
 
 # show the output image
 cv2.imshow("Output", image)
